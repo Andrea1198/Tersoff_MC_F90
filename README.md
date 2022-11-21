@@ -18,6 +18,7 @@ As default steps, the simulation runs:
 - 10 steps for initial gdr computation
 - 50M + 50M w/ gdr computation steps at 300 K to stabilize the inital crystal configuration
 - 50M + 50M w/ gdr computation steps at 7000 K to melt the system
+- 50M + 50M w/ gdr computation steps at 3000 K to stabilize the liquid
 - 50M + 50M w/ gdr computation steps at 300 K to freeze it a dn obtain a glass
 
 To change simulation steps go to files/input/steps.txt and follow the next directives for the file format (first column is just for reference, it is not needed in the file steps.txt)
