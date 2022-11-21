@@ -9,8 +9,8 @@ In order to run the code, type:
 $ make -(FLAGS) all clean run > output.out
 ```
 
-where _FLAGS_ can be DTHREAD=nthreads:
-* nthreads is the number of Open-mp parallelization order that the user wants
+<!-- where _FLAGS_ can be DTHREAD=nthreads:
+* nthreads is the number of Open-mp parallelization order that the user wants -->
 
 output.out should be substituted with the output filename wanted.
 
