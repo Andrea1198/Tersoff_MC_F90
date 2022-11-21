@@ -24,7 +24,7 @@ As default steps, the simulation runs:
 To change simulation steps go to *files/input/steps.txt* and follow the next directives for the file format (**first column is just for reference**, it is not needed in the file steps.txt)
 
 STEP INDEX | TEMPERATURE (eV) | STEPS | GDR STEPS | GDR UPDATE FREQUENCY|
--|-|-|-|--|
+-|-|-|-|-|
 STEP1|0.03|10|10|1
 STEP2|0.7|50000000|50000000|10000
 STEP3|0.3|50000000|50000000|10000
