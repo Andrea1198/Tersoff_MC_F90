@@ -14,3 +14,9 @@ where _FLAGS_ can be DTHREAD=nthreads:
 
 output.out should be substituted with the output filename wanted.
 
+As default steps, the simulation runs:
+- 10 steps for initial gdr computation
+- 50M + 50M w/ gdr computation steps at 300 K to stabilize the inital crystal configuration
+- 50M + 50M w/ gdr computation steps at 7000 K to melt the system
+- 50M + 50M w/ gdr computation steps at 300 K to freeze it a dn obtain a glass
+
