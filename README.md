@@ -20,3 +20,11 @@ As default steps, the simulation runs:
 - 50M + 50M w/ gdr computation steps at 7000 K to melt the system
 - 50M + 50M w/ gdr computation steps at 300 K to freeze it a dn obtain a glass
 
+To change simulation steps go to files/input/steps.txt and follow the next directives for the file format (first column is just for reference, it is not needed in the file steps.txt)
+
+STEP INDEX | TEMPERATURE (eV) | STEPS | GDR STEPS | GDR UPDATE FREQUENCY|
+-|-|-|-|--|
+STEP1|0.03|10|10|1
+STEP2|0.7|50000000|50000000|10000
+STEP3|0.3|50000000|50000000|10000
+STEP4|0.03|50000000|50000000|10000
