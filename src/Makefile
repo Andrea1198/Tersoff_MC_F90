@@ -1,27 +1,27 @@
 F90=gfortran
 FFLAGS=-O1 -fopenmp
 .SUFFIXES= .o .f90
-src=calcener.o\
-	eqmc.o\
-	library.o\
+src=library.o\
 	potential.o\
-	system.o
+	system.o\
+	calcener.o\
+	eqmc.o\
 
-eqmc: calcener.o
-calcener.o: library.o potential.o system.o
-potential.o: library.o
-system.o: library.o
+exe=sim.x
 
 %.o: %.f90
 	$(F90) $(FFLAGS) -c $<
 
-all: run_test.x
+all: sim.x
 
-run_test.x: $(src) run_test.o 
+$(exe): $(src) run_test.o 
 	$(F90) $(FFLAGS) -o $@ run_test.o $(src)
-	ln -sf $@ ./bin/$@
+	ln -sf $@ ../bin/$@
 
+run:
+	./$(exe)
+	
 clean:
-	rm -rf *.o *.mod
+	rm -rf *.o *.mod 
 
 -include make.deps

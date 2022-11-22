@@ -89,11 +89,15 @@ MODULE system
         INTEGER :: i
         CHARACTER(LEN=26) :: crystal_filename_xyz="./files/output/crystal.xyz"
         CHARACTER(LEN=26) :: crystal_filename_csv="./files/output/crystal.csv"
+        CHARACTER(LEN=2), DIMENSION(2) :: spec 
+        spec(2) = "Si"
+        spec(1) = " O"
+        
         OPEN(20, FILE=crystal_filename_xyz)
         WRITE(20, "(i4)") natoms
         WRITE(20, *)
         DO i = 1, natoms
-            WRITE(20, "(i1, 2x,3(f15.9,2x))") sp(i), x(i), y(i), z(i)
+            WRITE(20, "(A2, 2x,3(f15.9,2x))") spec(sp(i)), x(i), y(i), z(i)
         END DO
         CLOSE(20)
         
@@ -111,21 +115,29 @@ MODULE system
         IMPLICIT NONE
         REAL(dtype) :: max_s 
 
-        max_s = max_arr(c_s, 3)
-        nx = ceiling(Lx / max_s)
-        ny = ceiling(Ly / max_s)
-        nz = ceiling(Lz / max_s)
+        max_s = max_arr(c_s)
+        nx = floor(Lx / max_s)
+        ny = floor(Ly / max_s)
+        nz = floor(Lz / max_s)
     END SUBROUTINE redefine_cells
 
     SUBROUTINE print_sysinfo()
-        USE library, ONLY : dtype, stdout
-        IMPLICIT NONE
+        USE library,    ONLY : dtype, stdout, max_arr
+        USE potential,  ONLY : c_S
 
-        WRITE(stdout, *) "### System initialized ###"
-        WRITE(stdout, *) "# Lengths of system                     : Lx = ", Lx, " Ly = ", Ly, " Lz = ", Lz
-        WRITE(stdout, *) "# Number of cells before optimization   : mx = ", mx, " my = ", my, " mz = ", mz
-        WRITE(stdout, *) "# Number of cells after optimization    : nx = ", nx, " ny = ", ny, " nz = ", nz
-        WRITE(stdout, *) "# Total number of cells                 : ", nx*ny*nz
-        WRITE(stdout, *) "# Number of atoms for type              : Na = ", Na, " Nb = ", Nb
+        IMPLICIT NONE
+        
+
+        WRITE(stdout, "(A)") "### System initialized ###"
+        WRITE(stdout, "(3(A, F4.2))") "# Lengths of system                       : Lx = ", Lx, ", Ly = ", Ly, ", Lz = ", Lz
+        WRITE(stdout, "(3(A, i2))")   "# Number of cells                         : mx = ", mx, ", my = ", my, ", mz = ", mz
+        WRITE(stdout, "((A, f4.2))")  "# Cut length for cell optimization        : rcut = ", max_arr(c_S)
+        WRITE(stdout, *) 
+        WRITE(stdout, "(A)")          "# Optimizing ..."
+        WRITE(stdout, *) 
+        WRITE(stdout, "(3(A, i2))")   "# Number of cells after optimization      : nx = ", nx, ", ny = ", ny, ", nz = ", nz
+        WRITE(stdout, "(3(A, f4.2))") "# Cell lengths after optimization         : lx = ", Lx/nx, ", ly = ", Ly/ny, ", lz = ", Lz/nz
+        WRITE(stdout, "(2(A, i2))")   "# Number of atoms for type                : Na = ", Na, " Nb = ", Nb
+        WRITE(stdout, "(A, i3)")      "# Total number of cells                   : ", nx * ny * nz
     END SUBROUTINE print_sysinfo
 END MODULE system

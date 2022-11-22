@@ -114,30 +114,37 @@ MODULE library
             END DO
         END SUBROUTINE print_array_logic
 
-        FUNCTION max_arr(arr, n)
+        FUNCTION max_arr(arr)
             IMPLICIT NONE
-            INTEGER, INTENT(IN) :: n
-            REAL(dtype), DIMENSION(n), INTENT(in) :: arr
+            INTEGER :: n
+            REAL(dtype), DIMENSION(:), INTENT(in) :: arr
             REAL(dtype) :: max_arr
             INTEGER :: i
-
+            n = size(arr)
             max_arr = arr(1)
             DO i = 2, n
                 if (arr(i) .gt. max_arr) max_arr = arr(i)
             END DO
         END FUNCTION max_arr
 
-        FUNCTION min_arr(arr, n)
+        FUNCTION min_arr(arr)
             IMPLICIT NONE
-            INTEGER, INTENT(IN) :: n
-            REAL(dtype), DIMENSION(n), INTENT(in) :: arr
+            INTEGER :: n
+            REAL(dtype), DIMENSION(:), INTENT(in) :: arr
             REAL(dtype) :: min_arr
             INTEGER :: i
 
+            n = size(arr)
             min_arr = arr(1)
             DO i = 2, n
                 if (arr(i) .lt. min_arr) min_arr = arr(i)
             END DO
         END FUNCTION min_arr
 
+        SUBROUTINE error(message)
+            IMPLICIT NONE
+            CHARACTER(LEN=*), INTENT(IN) :: message
+            WRITE(stdout, *) "Error, execution interruption due to : ", message
+            stop
+        END SUBROUTINE error
 END MODULE library
