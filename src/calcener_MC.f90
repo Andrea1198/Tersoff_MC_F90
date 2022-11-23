@@ -55,6 +55,7 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
     q_crw = 0
 
     DO i = 1, natoms
+    ! print*, i
         dx_tmp = x(i) - x_in(1)
         dy_tmp = y(i) - y_in(1)
         dz_tmp = z(i) - z_in(1)
@@ -87,6 +88,7 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
         r2 = dx_tmp*dx_tmp + dy_tmp*dy_tmp + dz_tmp*dz_tmp
         index_ij = sp(i) + spi - 1
 
+        ! Find atoms in 2S, S sphere and [2S, 2S+delta] crown
         IF (r2 .le. 4. * c_S2(index_ij) .and. r2 .gt. 0.1) THEN
             x_out(q_out)    = x(i) + shiftx
             y_out(q_out)    = y(i) + shifty
@@ -101,6 +103,7 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
                 spq_in(q_in)  = sp(i)
                 atom_in(q_in) = i 
                 q_in = q_in + 1
+                print*, q_in
             END IF 
         ELSE IF ( r2 .le. (2. * c_S2(index_ij) + delta) ** 2 .and. r2 .gt. 0.1) THEN
             x_crw(q_crw)    = x(i) + shiftx
@@ -111,6 +114,7 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
             q_crw = q_crw + 1
         END IF
     END DO
+    print*, q_in, q_out, q_crw
 
     q_in  =  q_in - 1
     q_out = q_out - 1
