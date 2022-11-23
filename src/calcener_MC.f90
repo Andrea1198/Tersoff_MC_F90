@@ -1,6 +1,6 @@
 SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
-    USE library, ONLY : dtype, max_arr, min_arr, print_array
-    USE system, ONLY : x, y, z, sp, natoms, Lx, Ly, Lz, delta
+    USE library, ONLY : dtype, max_arr, min_arr, print_array, delta
+    USE system, ONLY : x, y, z, sp, natoms, Lx, Ly, Lz
     USE potential, ONLY : c_A, c_B, c_lam, c_mu, c_X, c_R, &
                             c_h, c_n, c_R2, c_S2, c_pRSr, &
                             c_betan, c_d2, c_dr2, c_c2, c_n2r 
@@ -58,11 +58,8 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
         dx_tmp = x(i) - x_in(1)
         dy_tmp = y(i) - y_in(1)
         dz_tmp = z(i) - z_in(1)
-        
-        ! print*, ""
-        ! print*, x(i), y(i), z(i)
-        ! print*, dx_tmp, dy_tmp, dz_tmp
-        ! print*, Lx/2, Ly/2, Lz/2
+
+        ! Periodic boundary conditions (mover is the central atom of the system)       
         shiftx=0.d0
         IF (dx_tmp .gt. Lx/2) THEN
             shiftx=-Lx
@@ -81,15 +78,15 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
         ELSE IF (dz_tmp .lt. -Lz/2) THEN
             shiftz=Lz
         END IF
-        ! print*, shiftx, shifty, shiftz
+
+        ! New distances
         dx_tmp = dx_tmp + shiftx
         dy_tmp = dy_tmp + shifty
         dz_tmp = dz_tmp + shiftz
-        ! print*, dx_tmp, dy_tmp, dz_tmp
-        
+
         r2 = dx_tmp*dx_tmp + dy_tmp*dy_tmp + dz_tmp*dz_tmp
         index_ij = sp(i) + spi - 1
-        ! print*, r2, c_S2(index_ij), spi, sp(i), index_ij
+
         IF (r2 .le. 4. * c_S2(index_ij) .and. r2 .gt. 0.1) THEN
             x_out(q_out)    = x(i) + shiftx
             y_out(q_out)    = y(i) + shifty
@@ -104,7 +101,6 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
                 spq_in(q_in)  = sp(i)
                 atom_in(q_in) = i 
                 q_in = q_in + 1
-                ! print*, "q_in  ", q_in
             END IF 
         ELSE IF ( r2 .le. (2. * c_S2(index_ij) + delta) ** 2 .and. r2 .gt. 0.1) THEN
             x_crw(q_crw)    = x(i) + shiftx
@@ -113,16 +109,16 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
             spq_crw(q_crw)  = sp(i)
             atom_crw(q_crw) = i 
             q_crw = q_crw + 1
-            ! print*, "q_crw ", q_crw
         END IF
     END DO
+
     q_in  =  q_in - 1
     q_out = q_out - 1
     q_crw = q_crw - 1
     
-    DO i = 1, q_in 
+    DO j_in = 1, q_in 
         ind = 1
-        spi = spq_in(q_in)
+        spi = spq_in(j_in)
         c2 = c_c2(spi)
         d2 = c_d2(spi)
         dr2 = c_dr2(spi)
@@ -176,6 +172,7 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
             ei_in   = ei_in + fC(j_out)*(fR(j_out) + bij*fA(j_out))
         END DO
     END DO
+    
     IF (q_crw .eq. 0) THEN
         x_out(q_out+1:q_out+q_crw) = x_crw(1:q_crw)
         y_out(q_out+1:q_out+q_crw) = y_crw(1:q_crw)
@@ -183,6 +180,7 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
         spq_out(q_out+1:q_out+q_crw) = spq_crw(1:q_crw)
         atom_out(q_out+1:q_out+q_crw) = atom_crw(1:q_crw)
     END IF
+
     x_in(1)     = xt
     y_in(1)     = yt
     z_in(1)     = zt
@@ -192,7 +190,7 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
 
     DO j_in = 1, q_in
         ind = 1
-        spi = spq_in(q_in)
+        spi = spq_in(j_in)
         c2 = c_c2(spi)
         d2 = c_d2(spi)
         dr2 = c_dr2(spi)
@@ -225,7 +223,7 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
                 END IF
             END IF
         END DO
-        stop
+        ! stop
         ind = ind - 1
 
         gthi = 1. + c2*dr2 
@@ -248,7 +246,7 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
         END DO
     END DO
 
-    ! print*, ei_in, ei_fin
+    print*, ei_in, ei_fin
     energy_diff = ei_in - ei_fin
 
 END SUBROUTINE calcener_MC

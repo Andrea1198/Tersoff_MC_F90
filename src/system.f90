@@ -11,7 +11,6 @@ MODULE system
     REAL(dtype), DIMENSION(:), ALLOCATABLE :: x, y, z, rx, ry, rz, mass
     REAL(dtype) :: Lx, Ly, Lz, ax, ay, az
     REAL(dtype) :: m1 = 16., m2 = 28.
-    REAL(dtype) :: delta
 
     CONTAINS 
     !===============================================
@@ -37,13 +36,13 @@ MODULE system
         USE library, ONLY : dtype, print_array, min_arr
         IMPLICIT NONE
         INTEGER :: m, i, j, k, atom, vec
-        REAL(dtype) :: xi, yi, zi, random
+        REAL(dtype) :: xi, yi, zi, random, disp
 
         ! shift
         xi = 0.
         yi = 0.
         zi = 0.
-        delta = 0.00
+        disp = 0.00
 
         ! real sys dimensions
         m = mx * my * mz
@@ -65,15 +64,15 @@ MODULE system
             DO vec = 1, nvec
                 CALL random_number(random)
                 random = random * 2. - 1.
-                x(atom) = xi + ax*i + random*delta + xvector(vec)
+                x(atom) = xi + ax*i + random*disp + xvector(vec)
 
                 CALL random_number(random)
                 random = random * 2. - 1.
-                y(atom) = yi + ay*j + random*delta + yvector(vec)
+                y(atom) = yi + ay*j + random*disp + yvector(vec)
                 
                 CALL random_number(random)
                 random = random * 2. - 1.
-                z(atom) = zi + az*k + random*delta + zvector(vec)
+                z(atom) = zi + az*k + random*disp + zvector(vec)
                 
                 sp(atom) = spv(vec)
                 IF (sp(atom) .EQ. 1) THEN
