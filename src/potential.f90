@@ -10,8 +10,9 @@ MODULE potential
     REAL(dtype), DIMENSION(natoms)  :: c_betan, c_d2, c_dr2, c_c2, c_n2r 
 
     CONTAINS
-    	
+    !===============================================
     SUBROUTINE read_coeffs()
+    ! Read potential coefficients from file
         USE library, ONLY : print_array, pi
         IMPLICIT NONE
         CHARACTER(LEN=35) :: coeff_filename="./files/input/coeff_SiO_tersoff.txt"

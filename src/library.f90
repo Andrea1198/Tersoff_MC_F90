@@ -14,12 +14,14 @@ MODULE library
     INTEGER, DIMENSION(nsteps) :: steps, gdr_steps, gdr_freq
     REAL(dtype), dimension(nsteps) :: kt
     
+    ! Print a matrix in stdout
     interface print_matrix
         module procedure print_matrix_real
         module procedure print_matrix_int
         module procedure print_matrix_logic
     end interface
-     
+                
+    ! Print an array in stdout
     interface print_array
         module procedure print_array_real
         module procedure print_array_int
@@ -28,7 +30,9 @@ MODULE library
 
 
     CONTAINS
+    !===============================================
         SUBROUTINE read_steps()
+        ! Read initial steps from file
             IMPLICIT NONE 
             CHARACTER(LEN=23)::steps_filename='./files/input/steps.txt'
             INTEGER :: i
@@ -41,6 +45,7 @@ MODULE library
 
         END SUBROUTINE read_steps
 
+    !===============================================
         SUBROUTINE print_matrix_real(mat, n1, n2)
             IMPLICIT NONE
             INTEGER, INTENT(IN) :: n1, n2 
@@ -54,6 +59,7 @@ MODULE library
             END DO
         END SUBROUTINE print_matrix_real
 
+    !===============================================
         SUBROUTINE print_matrix_int(mat, n1, n2)
             IMPLICIT NONE
             INTEGER, INTENT(IN) :: n1, n2 
@@ -67,6 +73,7 @@ MODULE library
             END DO
         END SUBROUTINE print_matrix_int
         
+    !===============================================
         SUBROUTINE print_matrix_logic(mat, n1, n2)
             IMPLICIT NONE
             INTEGER, INTENT(IN) :: n1, n2 
@@ -80,6 +87,7 @@ MODULE library
             END DO
         END SUBROUTINE print_matrix_logic
         
+    !===============================================
         SUBROUTINE print_array_real(arr)
             IMPLICIT NONE
             REAL(dtype), DIMENSION(:), INTENT(IN) :: arr
@@ -91,6 +99,7 @@ MODULE library
             END DO
         END SUBROUTINE print_array_real
         
+    !===============================================
         SUBROUTINE print_array_int(arr)
             IMPLICIT NONE
             INTEGER, DIMENSION(:), INTENT(IN) :: arr
@@ -102,6 +111,7 @@ MODULE library
             END DO
         END SUBROUTINE print_array_int
         
+    !===============================================
         SUBROUTINE print_array_logic(arr)
             IMPLICIT NONE
             LOGICAL, DIMENSION(:), INTENT(IN) :: arr
@@ -114,7 +124,9 @@ MODULE library
             END DO
         END SUBROUTINE print_array_logic
 
+    !===============================================
         FUNCTION max_arr(arr)
+        ! Find max value of array
             IMPLICIT NONE
             INTEGER :: n
             REAL(dtype), DIMENSION(:), INTENT(in) :: arr
@@ -127,7 +139,9 @@ MODULE library
             END DO
         END FUNCTION max_arr
 
+    !===============================================
         FUNCTION min_arr(arr)
+        ! Find min value of array
             IMPLICIT NONE
             INTEGER :: n
             REAL(dtype), DIMENSION(:), INTENT(in) :: arr
@@ -141,7 +155,9 @@ MODULE library
             END DO
         END FUNCTION min_arr
 
+    !===============================================
         SUBROUTINE error(message)
+        ! End execution with message
             IMPLICIT NONE
             CHARACTER(LEN=*), INTENT(IN) :: message
             WRITE(stdout, *) "Error, execution interruption due to : ", message

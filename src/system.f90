@@ -2,18 +2,21 @@ MODULE system
     USE library,        ONLY : dtype
     IMPLICIT NONE 
     INTEGER :: nvec, natoms, Na, Nb, N
-    INTEGER, PARAMETER :: mx=1
-    INTEGER, PARAMETER :: my=1
-    INTEGER, PARAMETER :: mz=1
+    INTEGER :: mx
+    INTEGER :: my
+    INTEGER :: mz
     INTEGER :: nx, ny, nz
     INTEGER, DIMENSION(:), ALLOCATABLE :: spv, sp
     REAL(dtype), DIMENSION(:), ALLOCATABLE :: xvector, yvector, zvector
     REAL(dtype), DIMENSION(:), ALLOCATABLE :: x, y, z, rx, ry, rz, mass
     REAL(dtype) :: Lx, Ly, Lz, ax, ay, az
     REAL(dtype) :: m1 = 16., m2 = 28.
+    REAL(dtype) :: delta
 
     CONTAINS 
+    !===============================================
     SUBROUTINE read_vec()
+    ! Read primitive vectors from file
         USE library, ONLY : dtype
         IMPLICIT NONE
         INTEGER :: i
@@ -28,7 +31,9 @@ MODULE system
         CLOSE(20)
     END SUBROUTINE read_vec
 
+    !===============================================
     SUBROUTINE create_crystal()
+    ! Generate crystal positions
         USE library, ONLY : dtype, print_array
         IMPLICIT NONE
         INTEGER :: m, i, j, k, atom, vec
@@ -59,11 +64,17 @@ MODULE system
         DO k = 0, mz-1
             DO vec = 1, nvec
                 CALL random_number(random)
+                random = random * 2. - 1.
                 x(atom) = xi + ax*i + random*delta + xvector(vec)
+
                 CALL random_number(random)
+                random = random * 2. - 1.
                 y(atom) = yi + ay*j + random*delta + yvector(vec)
+                
                 CALL random_number(random)
+                random = random * 2. - 1.
                 z(atom) = zi + az*k + random*delta + zvector(vec)
+                
                 sp(atom) = spv(vec)
                 IF (sp(atom) .EQ. 1) THEN
                     mass(atom) = m1
@@ -78,12 +89,17 @@ MODULE system
         END DO
         END DO
 
-        rx = x/Lx - 0.5
-        ry = y/Ly - 0.5
-        rz = z/Lz - 0.5
+        rx = x/Lx 
+        rx = rx - anint(rx)
+        ry = y/Ly
+        ry = ry - anint(ry)
+        rz = z/Lz
+        rz = rz - anint(rz)
     END SUBROUTINE create_crystal
 
+    !===============================================
     SUBROUTINE write_crystal()
+    ! Write output of crystal in files
         USE library, ONLY : dtype, print_matrix
         IMPLICIT NONE
         INTEGER :: i
@@ -109,7 +125,9 @@ MODULE system
         CLOSE(20)
     END SUBROUTINE write_crystal
 
+    !===============================================
     SUBROUTINE redefine_cells()
+    ! Optimize cells
         USE library, ONLY : dtype, max_arr
         USE potential, ONLY : c_S
         IMPLICIT NONE
@@ -121,7 +139,9 @@ MODULE system
         nz = floor(Lz / max_s)
     END SUBROUTINE redefine_cells
 
+    !===============================================
     SUBROUTINE print_sysinfo()
+    ! Write system infos in stdout
         USE library,    ONLY : dtype, stdout, max_arr
         USE potential,  ONLY : c_S
 
@@ -140,4 +160,5 @@ MODULE system
         WRITE(stdout, "(2(A, i2))")   "# Number of atoms for type                : Na = ", Na, " Nb = ", Nb
         WRITE(stdout, "(A, i3)")      "# Total number of cells                   : ", nx * ny * nz
     END SUBROUTINE print_sysinfo
+    
 END MODULE system

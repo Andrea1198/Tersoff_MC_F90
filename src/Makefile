@@ -22,6 +22,6 @@ run:
 	./$(exe)
 	
 clean:
-	rm -rf *.o *.mod 
+	rm -rf *.o 
 
 -include make.deps

@@ -2,12 +2,13 @@ PROGRAM run_test
 
     USE library,        ONLY : read_steps
     USE potential,      ONLY : read_coeffs
-    USE system,         ONLY : read_vec, create_crystal, write_crystal, redefine_cells, print_sysinfo 
+    USE system,         ONLY : read_vec, create_crystal, write_crystal, redefine_cells, print_sysinfo, &
+                                mx, my, mz
 
     IMPLICIT NONE
-    INTEGER :: mx
-    INTEGER :: my
-    INTEGER :: mz
+    mx = 1                      ! Number of cells in x direction
+    my = 1                      ! Number of cells in y direction
+    mz = 1                      ! Number of cells in z direction
     ! ### Initialization of parameters ### !
     CALL read_steps()           ! Read number of steps from ./files/input/steps.txt
     CALL read_coeffs()          ! Read coefficients of Tersoff potential
