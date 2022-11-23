@@ -5,6 +5,7 @@ src=library.o\
 	potential.o\
 	system.o\
 	calcener.o\
+	calcener_MC.o\
 	eqmc.o\
 
 exe=sim.x

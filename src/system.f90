@@ -34,10 +34,10 @@ MODULE system
     !===============================================
     SUBROUTINE create_crystal()
     ! Generate crystal positions
-        USE library, ONLY : dtype, print_array
+        USE library, ONLY : dtype, print_array, min_arr
         IMPLICIT NONE
         INTEGER :: m, i, j, k, atom, vec
-        REAL(dtype) :: xi, yi, zi, delta, random
+        REAL(dtype) :: xi, yi, zi, random
 
         ! shift
         xi = 0.
@@ -95,6 +95,10 @@ MODULE system
         ry = ry - anint(ry)
         rz = z/Lz
         rz = rz - anint(rz)
+
+        x = rx * Lx
+        y = ry * Ly
+        z = rz * Lz
     END SUBROUTINE create_crystal
 
     !===============================================
