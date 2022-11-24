@@ -2,7 +2,7 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
     USE library, ONLY : dtype, max_arr, min_arr, print_array, delta
     USE system, ONLY : x, y, z, sp, natoms, Lx, Ly, Lz
     USE potential, ONLY : c_A, c_B, c_lam, c_mu, c_X, c_R, &
-                            c_h, c_n, c_R2, c_S2, c_pRSr, &
+                            c_h, c_n, c_R2, c_S, c_S2, c_pRSr, &
                             c_betan, c_d2, c_dr2, c_c2, c_n2r 
     USE OMP_LIB
 
@@ -30,6 +30,8 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
     ei_in   = 0.
     ei_fin  = 0.
 
+    print*, x(mover), dx_t
+
     xt = x(mover) + dx_t
     yt = y(mover) + dy_t
     zt = z(mover) + dz_t
@@ -55,9 +57,9 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
     z_out(1)     = z(mover)
     spq_out(1)   = spi
 
-    q_in = 1
-    q_out = 1
-    q_crw = 0
+    q_in = 2
+    q_out = 2
+    q_crw = 1
 
     DO i = 1, natoms
     ! print*, i
@@ -94,7 +96,7 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
         index_ij = sp(i) + spi - 1
 
         ! Find atoms in 2S, S sphere and [2S, 2S+delta] crown
-        IF (r2 .le. 4. * c_S2(index_ij) .and. r2 .gt. 0.1) THEN
+        IF (r2 .le. 4. * max_arr(c_S2) .and. r2 .gt. 0.1) THEN
             x_out(q_out)    = x(i) + shiftx
             y_out(q_out)    = y(i) + shifty
             z_out(q_out)    = z(i) + shiftz
@@ -108,9 +110,8 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
                 spq_in(q_in)  = sp(i)
                 atom_in(q_in) = i 
                 q_in = q_in + 1
-                print*, q_in
             END IF 
-        ELSE IF ( r2 .le. (2. * c_S2(index_ij) + delta) ** 2 .and. r2 .gt. 0.1) THEN
+        ELSE IF ( r2 .le. (2. * max_arr(c_S) + delta) ** 2 .and. r2 .gt. 0.1) THEN
             x_crw(q_crw)    = x(i) + shiftx
             y_crw(q_crw)    = y(i) + shifty
             z_crw(q_crw)    = z(i) + shiftz
@@ -119,13 +120,12 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
             q_crw = q_crw + 1
         END IF
     END DO
-    print*, q_in, q_out, q_crw
 
     q_in  =  q_in - 1
     q_out = q_out - 1
     q_crw = q_crw - 1
-    
-    DO j_in = 1, q_in 
+
+    DO j_in = 1, q_in
         ind = 1
         spi = spq_in(j_in)
         c2 = c_c2(spi)
@@ -135,15 +135,15 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
         n = c_n(spi)
         betan = c_betan(spi)
         n2r = c_n2r(spi)
-        
+
         DO j_out = 1, q_out
             IF (atom_in(j_in) .ne. atom_out(j_out)) THEN
                 dx(ind) = x_in(j_in) - x_out(j_out)
                 dy(ind) = y_in(j_in) - y_out(j_out)
                 dz(ind) = z_in(j_in) - z_out(j_out)
-                
+
                 r2 = dx(ind)*dx(ind) + dy(ind)*dy(ind) + dz(ind)*dz(ind)
-                index_ij = spq_in(j_in) + spq_out(j_out)
+                index_ij = spq_in(j_in) + spq_out(j_out) - 1
                 IF (r2 .le. c_S2(index_ij) .and. r2 .gt. 0.1) THEN
                     tmp_atoms(ind) = j_out
                     r(ind) = sqrt(r2)
@@ -160,14 +160,15 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
                 END IF
             END IF
         END DO
+        ! stop
         ind = ind - 1
-        
+
         gthi = 1. + c2*dr2 
         DO j_out = 1, ind 
-            index_ij = spq_in(j_in) + spq_out(tmp_atoms(j_out))
+            index_ij = spq_in(j_in) + spq_out(tmp_atoms(j_out)) - 1
             zetaij = 0.
-            DO j_out_ = j_out+1, j_out+q_out-1
-                j_out1 = mod(j_out_-1, q_out) + 1
+            DO j_out_ = j_out+1, j_out+ind-1
+                j_out1 = mod(j_out_-1, ind) + 1
                 rij_dot_rik     = dx(j_out)*dx(j_out1) + dy(j_out)*dy(j_out1) + dz(j_out)*dz(j_out1)
                 rrij_rrik       = rr(j_out) * rr(j_out1)
                 cThijk          = rij_dot_rik * rrij_rrik
@@ -178,7 +179,7 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
             END DO
             bZijn   = 1. + betan*(zetaij**n)
             bij     = c_X(index_ij) * (bZijn**n2r)
-            ei_in   = ei_in + fC(j_out)*(fR(j_out) + bij*fA(j_out))
+            ei_in  = ei_in + fC(j_out)*(fR(j_out) + bij*fA(j_out))
         END DO
     END DO
     
@@ -189,6 +190,7 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
         spq_out(q_out+1:q_out+q_crw) = spq_crw(1:q_crw)
         atom_out(q_out+1:q_out+q_crw) = atom_crw(1:q_crw)
     END IF
+
 
     x_in(1)     = xt
     y_in(1)     = yt
@@ -215,7 +217,7 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
                 dz(ind) = z_in(j_in) - z_out(j_out)
 
                 r2 = dx(ind)*dx(ind) + dy(ind)*dy(ind) + dz(ind)*dz(ind)
-                index_ij = spq_in(j_in) + spq_out(j_out)
+                index_ij = spq_in(j_in) + spq_out(j_out) - 1
                 IF (r2 .le. c_S2(index_ij) .and. r2 .gt. 0.1) THEN
                     tmp_atoms(ind) = j_out
                     r(ind) = sqrt(r2)
@@ -237,7 +239,7 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
 
         gthi = 1. + c2*dr2 
         DO j_out = 1, ind 
-            index_ij = spq_in(j_in) + spq_out(j_out)
+            index_ij = spq_in(j_in) + spq_out(tmp_atoms(j_out)) - 1
             zetaij = 0.
             DO j_out_ = j_out+1, j_out+ind-1
                 j_out1 = mod(j_out_-1, ind) + 1

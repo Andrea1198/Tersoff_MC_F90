@@ -10,7 +10,7 @@ MODULE library
     REAL(dtype), PARAMETER :: dt=5.d-2
     REAL(dtype), PARAMETER :: delta=4.d-4, dV0=1.d-2, p_ext=0.97d0
     ! SIMULATION STEPS
-    INTEGER, PARAMETER :: nsteps=1
+    INTEGER, PARAMETER :: nsteps=5
     INTEGER, DIMENSION(nsteps) :: steps, gdr_steps, gdr_freq
     REAL(dtype), dimension(nsteps) :: kt
     

@@ -6,9 +6,9 @@ PROGRAM run_test
                                 mx, my, mz
 
     IMPLICIT NONE
-    mx = 1                      ! Number of cells in x direction
-    my = 1                      ! Number of cells in y direction
-    mz = 1                      ! Number of cells in z direction
+    mx = 3                      ! Number of cells in x direction
+    my = 3                      ! Number of cells in y direction
+    mz = 3                      ! Number of cells in z direction
     ! ### Initialization of parameters ### !
     CALL read_steps()           ! Read number of steps from ./files/input/steps.txt
     CALL read_coeffs()          ! Read coefficients of Tersoff potential

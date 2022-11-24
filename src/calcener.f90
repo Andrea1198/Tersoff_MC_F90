@@ -1,4 +1,4 @@
-SUBROUTINE calcener(energy, e1)
+SUBROUTINE calcener(energy)
     USE library, ONLY : stdout, dtype, max_arr, min_arr, print_array, error
     USE system, ONLY : rx, ry, rz, sp, natoms, nx, ny, nz, Lx, Ly, Lz
     USE potential, ONLY : c_A, c_B, c_lam, c_mu, c_X, c_R, &
@@ -8,7 +8,6 @@ SUBROUTINE calcener(energy, e1)
     
     IMPLICIT NONE
     REAL(dtype), INTENT(OUT) :: energy
-    REAL(dtype), DIMENSION(natoms), INTENT(OUT) :: e1
     ! PARAMETERS AND LOCAL VARIABLES FOR COMPUTATIONS
     INTEGER, PARAMETER :: nmax=20
     INTEGER :: ncells
@@ -17,6 +16,7 @@ SUBROUTINE calcener(energy, e1)
     INTEGER, DIMENSION(nmax) :: spq, atom
     REAL(dtype) :: enep
     ! REORDERING OF ATOMS
+    REAL(dtype), DIMENSION(natoms) :: e1
     REAL(dtype), DIMENSION(natoms) :: rcx, rcy, rcz
     INTEGER, DIMENSION(:), ALLOCATABLE :: np 
     INTEGER, DIMENSION(:), ALLOCATABLE :: indp 
@@ -24,13 +24,10 @@ SUBROUTINE calcener(energy, e1)
     INTEGER, DIMENSION(27) :: vcx1, vcy1, vcz1
     ! LOCAL VARIABLES
     INTEGER :: vcx, vcy, vcz, c, wcx, wcy, wcz, index_ij, spi
-    INTEGER :: i, j, k, q, c1, nextj, nextk1, nextk, k1, k2, k3
+    INTEGER :: i, j, k, q, c1, nextj, nextk1, nextk
     REAL(dtype) :: ei, c2, d2, dr2, h, n, betan, n2r
     REAL(dtype) :: shiftx, shifty, shiftz, r2, a, gthi, zetaij
     REAL(dtype) :: rij_dot_rik, rrij_rrik, gThden, bZijn, bij
-    ! FILENAMES FOR DEBUG !
-    CHARACTER(LEN=15) :: dir="./files/output/"
-    CHARACTER(LEN=101) :: np_out, indc_out, vcpos_out, indp_out
     
     ! Allocate and compute total number of cells
     ncells = nx*ny*nz

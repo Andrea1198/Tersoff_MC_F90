@@ -9,7 +9,7 @@ MODULE system
     INTEGER, DIMENSION(:), ALLOCATABLE :: spv, sp
     REAL(dtype), DIMENSION(:), ALLOCATABLE :: xvector, yvector, zvector
     REAL(dtype), DIMENSION(:), ALLOCATABLE :: x, y, z, rx, ry, rz, mass
-    REAL(dtype) :: Lx, Ly, Lz, ax, ay, az
+    REAL(dtype) :: Lx, Ly, Lz, ax, ay, az, volume
     REAL(dtype) :: m1 = 16., m2 = 28.
 
     CONTAINS 
@@ -98,6 +98,7 @@ MODULE system
         x = rx * Lx
         y = ry * Ly
         z = rz * Lz
+        volume = Lx * Ly * Lz
     END SUBROUTINE create_crystal
 
     !===============================================
@@ -152,7 +153,7 @@ MODULE system
         
 
         WRITE(stdout, "(A)") "### System initialized ###"
-        WRITE(stdout, "(3(A, F4.2))") "# Lengths of system                       : Lx = ", Lx, ", Ly = ", Ly, ", Lz = ", Lz
+        WRITE(stdout, "(3(A, F7.2))") "# Lengths of system                       : Lx = ", Lx, ", Ly = ", Ly, ", Lz = ", Lz
         WRITE(stdout, "(3(A, i2))")   "# Number of cells                         : mx = ", mx, ", my = ", my, ", mz = ", mz
         WRITE(stdout, "((A, f4.2))")  "# Cut length for cell optimization        : rcut = ", max_arr(c_S)
         WRITE(stdout, *) 
@@ -160,7 +161,7 @@ MODULE system
         WRITE(stdout, *) 
         WRITE(stdout, "(3(A, i2))")   "# Number of cells after optimization      : nx = ", nx, ", ny = ", ny, ", nz = ", nz
         WRITE(stdout, "(3(A, f4.2))") "# Cell lengths after optimization         : lx = ", Lx/nx, ", ly = ", Ly/ny, ", lz = ", Lz/nz
-        WRITE(stdout, "(2(A, i2))")   "# Number of atoms for type                : Na = ", Na, " Nb = ", Nb
+        WRITE(stdout, "(2(A, i3))")   "# Number of atoms for type                : Na = ", Na, " Nb = ", Nb
         WRITE(stdout, "(A, i3)")      "# Total number of cells                   : ", nx * ny * nz
     END SUBROUTINE print_sysinfo
     
