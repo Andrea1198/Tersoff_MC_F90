@@ -10,7 +10,7 @@ MODULE system
     REAL(dtype), DIMENSION(:), ALLOCATABLE :: xvector, yvector, zvector
     REAL(dtype), DIMENSION(:), ALLOCATABLE :: x, y, z, rx, ry, rz, mass
     REAL(dtype) :: Lx, Ly, Lz, ax, ay, az, volume
-    REAL(dtype) :: m1 = 16., m2 = 28.
+    REAL(dtype) :: m1 = 16., m2 = 28., energy, energy_tmp
 
     CONTAINS 
     !===============================================

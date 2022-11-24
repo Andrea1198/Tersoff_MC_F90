@@ -1,13 +1,12 @@
-SUBROUTINE calcener(energy)
+SUBROUTINE calcener()
     USE library, ONLY : stdout, dtype, max_arr, min_arr, print_array, error
-    USE system, ONLY : rx, ry, rz, sp, natoms, nx, ny, nz, Lx, Ly, Lz
+    USE system, ONLY : rx, ry, rz, sp, natoms, nx, ny, nz, Lx, Ly, Lz, energy_tmp
     USE potential, ONLY : c_A, c_B, c_lam, c_mu, c_X, c_R, &
                             c_h, c_n, c_R2, c_S2, c_pRSr, &
                             c_betan, c_d2, c_dr2, c_c2, c_n2r 
     USE OMP_LIB
     
     IMPLICIT NONE
-    REAL(dtype), INTENT(OUT) :: energy
     ! PARAMETERS AND LOCAL VARIABLES FOR COMPUTATIONS
     INTEGER, PARAMETER :: nmax=20
     INTEGER :: ncells
@@ -185,5 +184,5 @@ SUBROUTINE calcener(energy)
     END DO
     END DO
     END DO
-    energy = sum(e1) * 0.5
+    energy_tmp = sum(e1) * 0.5
 END SUBROUTINE calcener

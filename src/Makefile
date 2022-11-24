@@ -17,7 +17,7 @@ all: sim.x
 
 $(exe): $(src) run_test.o 
 	$(F90) $(FFLAGS) -o $@ run_test.o $(src)
-	ln -sf $@ ../bin/$@
+	cp $@ ../bin/$@
 
 run:
 	./$(exe)

@@ -1,14 +1,15 @@
 PROGRAM run_test
 
-    USE library,        ONLY : read_steps
+    USE library,        ONLY : read_steps, nsteps, steps, kt, dtype, print_infos
     USE potential,      ONLY : read_coeffs
     USE system,         ONLY : read_vec, create_crystal, write_crystal, redefine_cells, print_sysinfo, &
-                                mx, my, mz
+                                mx, my, mz, energy
 
     IMPLICIT NONE
-    mx = 3                      ! Number of cells in x direction
+    INTEGER :: i
+    mx = 5                      ! Number of cells in x direction
     my = 3                      ! Number of cells in y direction
-    mz = 3                      ! Number of cells in z direction
+    mz = 5                      ! Number of cells in z direction
     ! ### Initialization of parameters ### !
     CALL read_steps()           ! Read number of steps from ./files/input/steps.txt
     CALL read_coeffs()          ! Read coefficients of Tersoff potential
@@ -18,7 +19,9 @@ PROGRAM run_test
     CALL write_crystal()        ! Write position on file ./files/output/crystal.csv, crystal.xyz
     CALL redefine_cells()       ! Optimize cell dimensions for faster nearest neighbour search
     CALL print_sysinfo()        ! Write in stdout the system informations
-
-    CALL eqmc()                 ! Start simulation      (### DEBUG ###)
-
+    DO i = 1, nsteps
+        CALL eqmc(i, 0)                 ! Start simulation      (### DEBUG ###)
+        CALL eqmc(i, 1)                 ! Start simulation      (### DEBUG ###)
+        CALL print_infos(i, steps(i), kt(i), energy)
+    END DO
 END PROGRAM run_test

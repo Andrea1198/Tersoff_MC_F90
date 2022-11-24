@@ -1,6 +1,6 @@
-SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
+SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t)
     USE library, ONLY : dtype, max_arr, min_arr, print_array, delta
-    USE system, ONLY : x, y, z, sp, natoms, Lx, Ly, Lz
+    USE system, ONLY : x, y, z, sp, natoms, Lx, Ly, Lz, energy_tmp
     USE potential, ONLY : c_A, c_B, c_lam, c_mu, c_X, c_R, &
                             c_h, c_n, c_R2, c_S, c_S2, c_pRSr, &
                             c_betan, c_d2, c_dr2, c_c2, c_n2r 
@@ -9,7 +9,6 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
     IMPLICIT NONE
     INTEGER, INTENT(IN) :: mover
     REAL(dtype), INTENT(IN) :: dx_t, dy_t, dz_t
-    REAL(dtype), INTENT(OUT) :: energy_diff
     ! PARAMETERS AND LOCAL VARIABLES FOR COMPUTATIONS
     INTEGER, PARAMETER :: nmax=20, nmax_out=100
     REAL(dtype), DIMENSION(nmax) :: fC, fA, fR, dx, dy, dz, r, rr
@@ -29,8 +28,6 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
     
     ei_in   = 0.
     ei_fin  = 0.
-
-    print*, x(mover), dx_t
 
     xt = x(mover) + dx_t
     yt = y(mover) + dy_t
@@ -60,7 +57,6 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
     q_in = 2
     q_out = 2
     q_crw = 1
-
     DO i = 1, natoms
     ! print*, i
         dx_tmp = x(i) - x_in(1)
@@ -182,7 +178,6 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
             ei_in  = ei_in + fC(j_out)*(fR(j_out) + bij*fA(j_out))
         END DO
     END DO
-    
     IF (q_crw .eq. 0) THEN
         x_out(q_out+1:q_out+q_crw) = x_crw(1:q_crw)
         y_out(q_out+1:q_out+q_crw) = y_crw(1:q_crw)
@@ -257,7 +252,6 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
         END DO
     END DO
 
-    print*, ei_in, ei_fin
-    energy_diff = ei_in - ei_fin
+    energy_tmp = ei_in - ei_fin
 
 END SUBROUTINE calcener_MC

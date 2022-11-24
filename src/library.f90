@@ -163,4 +163,14 @@ MODULE library
             WRITE(stdout, *) "Error, execution interruption due to : ", message
             stop
         END SUBROUTINE error
+
+    !===============================================
+        SUBROUTINE print_infos(i, step_i, kt_i, enep_i)
+            IMPLICIT NONE
+            INTEGER, INTENT(IN) ::  i, step_i
+            REAL(dtype), INTENT(IN) :: kt_i, enep_i
+
+            WRITE(stdout, "(A, i2, A, i10, A, f4.2, A, f15.6)") "### Starting phase ", i," steps = ", &
+                                                        step_i, "  temperature = ", kt_i, " energy = ", enep_i
+        END SUBROUTINE print_infos
 END MODULE library
