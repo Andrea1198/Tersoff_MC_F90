@@ -1,4 +1,4 @@
-SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
+SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t, energy_diff)
     USE library, ONLY : dtype, max_arr, min_arr, print_array, delta
     USE system, ONLY : x, y, z, sp, natoms, Lx, Ly, Lz
     USE potential, ONLY : c_A, c_B, c_lam, c_mu, c_X, c_R, &
@@ -8,7 +8,7 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
 
     IMPLICIT NONE
     INTEGER, INTENT(IN) :: mover
-    REAL(dtype), INTENT(IN) :: xt, yt, zt
+    REAL(dtype), INTENT(IN) :: dx_t, dy_t, dz_t
     REAL(dtype), INTENT(OUT) :: energy_diff
     ! PARAMETERS AND LOCAL VARIABLES FOR COMPUTATIONS
     INTEGER, PARAMETER :: nmax=20, nmax_out=100
@@ -25,10 +25,15 @@ SUBROUTINE calcener_MC(mover, xt, yt, zt, energy_diff)
     REAL(dtype) :: shiftx, shifty, shiftz, r2, a, gthi, zetaij
     REAL(dtype) :: rij_dot_rik, rrij_rrik, gThden, bZijn, bij
     REAL(dtype) :: dx_tmp, dy_tmp, dz_tmp, cThijk, h_cThijk, gThijk
-
+    REAL(dtype) :: xt, yt, zt
+    
     ei_in   = 0.
     ei_fin  = 0.
 
+    xt = x(mover) + dx_t
+    yt = y(mover) + dy_t
+    zt = z(mover) + dz_t
+    
     spi = sp(mover)
     c2      = c_c2(spi)
     d2      = c_d2(spi)
