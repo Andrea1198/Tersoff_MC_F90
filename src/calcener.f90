@@ -88,6 +88,7 @@ SUBROUTINE calcener()
 
     ! Iterate over cells to compute energy
     enep = 0
+    ! $OMP PARALLEL DO
     DO vcx = 1, nx
     DO vcy = 1, ny
     DO vcz = 1, nz
@@ -179,10 +180,11 @@ SUBROUTINE calcener()
                 
                 ei = ei + fc(nextj) * (fR(nextj) + bij * fA(nextj))
             END DO
-            e1(indcp(i)) = e1(indcp(i)) + ei
+            energy_tmp = energy_tmp + ei
         END DO
     END DO
     END DO
     END DO
-    energy_tmp = sum(e1) * 0.5
+    ! $OMP END PARALLEL DO
+    energy_tmp = energy_tmp * 0.5
 END SUBROUTINE calcener

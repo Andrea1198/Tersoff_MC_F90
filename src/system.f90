@@ -6,7 +6,10 @@ MODULE system
     INTEGER :: my
     INTEGER :: mz
     INTEGER :: nx, ny, nz
+    INTEGER, PARAMETER :: kg = 1024
     INTEGER, DIMENSION(:), ALLOCATABLE :: spv, sp
+    REAL(dtype), DIMENSION(kg, 3) :: gcount
+    REAL(dtype) :: ldel
     REAL(dtype), DIMENSION(:), ALLOCATABLE :: xvector, yvector, zvector
     REAL(dtype), DIMENSION(:), ALLOCATABLE :: x, y, z, rx, ry, rz, mass
     REAL(dtype) :: Lx, Ly, Lz, ax, ay, az, volume
@@ -99,21 +102,27 @@ MODULE system
         y = ry * Ly
         z = rz * Lz
         volume = Lx * Ly * Lz
+        ldel   = min(Lx, Ly, Lz) * 0.5 / kg
     END SUBROUTINE create_crystal
 
     !===============================================
-    SUBROUTINE write_crystal()
+    SUBROUTINE write_crystal(index)
     ! Write output of crystal in files
         USE library, ONLY : dtype, print_matrix
         IMPLICIT NONE
         INTEGER :: i
-        CHARACTER(LEN=26) :: crystal_filename_xyz="./files/output/crystal.xyz"
-        CHARACTER(LEN=26) :: crystal_filename_csv="./files/output/crystal.csv"
+        INTEGER, INTENT(IN) :: index
+        CHARACTER(LEN=20) :: filename_xyz
+        CHARACTER(LEN=20) :: filename_csv
+        CHARACTER(LEN=1) :: index_str
         CHARACTER(LEN=2), DIMENSION(2) :: spec 
         spec(2) = "Si"
         spec(1) = " O"
+        write(index_str, "(I1)") index
+        filename_xyz = "./files/output/" // index_str // ".xyz"
+        filename_csv = "./files/output/" // index_str // ".csv"
         
-        OPEN(20, FILE=crystal_filename_xyz)
+        OPEN(20, FILE=filename_xyz)
         WRITE(20, "(i4)") natoms
         WRITE(20, *)
         DO i = 1, natoms
@@ -121,7 +130,7 @@ MODULE system
         END DO
         CLOSE(20)
         
-        OPEN(20, FILE=crystal_filename_csv)
+        OPEN(20, FILE=filename_csv)
         WRITE(20, *) "#sp,x,y,z"
         DO i = 1, natoms
             WRITE(20, "(i1,A,3(f15.9,A))") sp(i), ',', x(i), ',', y(i), ',', z(i)

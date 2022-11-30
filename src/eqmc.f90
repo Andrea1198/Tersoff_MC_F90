@@ -1,5 +1,5 @@
 SUBROUTINE eqmc(index, mode)
-    USE library, ONLY : dtype, steps, gdr_steps, delta, kt, dV0, p_ext
+    USE library, ONLY : dtype, stdout, steps, gdr_steps, gdr_freq, delta, kt, dV0, p_ext
     USE system, ONLY : natoms, x, y, z, rx, ry, rz, Lx, Ly, Lz, volume, energy, energy_tmp
     IMPLICIT NONE
     INTEGER, INTENT(IN) :: index, mode
@@ -96,10 +96,16 @@ SUBROUTINE eqmc(index, mode)
                 accepv = accepv + 1
             END IF
         END IF
-        IF (mod(j, 100000) .eq. 0) THEN
+        IF (mod(j, 1000000) .eq. 0) THEN
             CALL CPU_TIME(time_fin)
-            PRINT*, j, " time  for 100000 steps : ", time_fin - time_in
+            WRITE(stdout,"(2i3, 2(A, f9.3))")index, int(j/1e6),"M time  for 1M steps : ",&
+                                         time_fin - time_in, " energy : ", energy
             time_in = time_fin
+        END IF
+        IF (mode .eq. 1) THEN
+            IF (mod(j, gdr_freq(index)) .eq. 0) THEN
+                ! CALL compute_gdr()
+            END IF
         END IF
     END DO
 END SUBROUTINE

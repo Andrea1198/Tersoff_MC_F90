@@ -1,9 +1,10 @@
 F90=gfortran
-FFLAGS=-O1 -fopenmp
+FFLAGS=-O3 -fopenmp -pg 
 .SUFFIXES= .o .f90
 src=library.o\
 	potential.o\
 	system.o\
+	compute_gdr.o\
 	calcener.o\
 	calcener_MC.o\
 	eqmc.o\
@@ -23,6 +24,7 @@ run:
 	./$(exe)
 	
 clean:
-	rm -rf *.o 
+	rm -rf *.o
+	rm ./files/output/*
 
 -include make.deps
