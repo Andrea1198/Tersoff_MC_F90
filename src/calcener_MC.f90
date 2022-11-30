@@ -26,6 +26,7 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t)
     REAL(dtype) :: dx_tmp, dy_tmp, dz_tmp, cThijk, h_cThijk, gThijk
     REAL(dtype) :: xt, yt, zt
     
+    !$OMP PARALLEL SHARED(ei_in, ei_fin, energy_tmp)
     ei_in   = 0.
     ei_fin  = 0.
 
@@ -57,6 +58,7 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t)
     q_in = 2
     q_out = 2
     q_crw = 1
+    !$OMP DO
     DO i = 1, natoms
     ! print*, i
         dx_tmp = x(i) - x_in(1)
@@ -116,11 +118,12 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t)
             q_crw = q_crw + 1
         END IF
     END DO
-
+    !$OMP END DO
     q_in  =  q_in - 1
     q_out = q_out - 1
     q_crw = q_crw - 1
 
+    !$OMP DO
     DO j_in = 1, q_in
         ind = 1
         spi = spq_in(j_in)
@@ -178,6 +181,8 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t)
             ei_in  = ei_in + fC(j_out)*(fR(j_out) + bij*fA(j_out))
         END DO
     END DO
+    !$OMP END DO
+
     IF (q_crw .eq. 0) THEN
         x_out(q_out+1:q_out+q_crw) = x_crw(1:q_crw)
         y_out(q_out+1:q_out+q_crw) = y_crw(1:q_crw)
@@ -193,7 +198,7 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t)
     x_out(1)    = xt
     y_out(1)    = yt
     z_out(1)    = zt
-
+    !$OMP DO
     DO j_in = 1, q_in
         ind = 1
         spi = spq_in(j_in)
@@ -251,7 +256,7 @@ SUBROUTINE calcener_MC(mover, dx_t, dy_t, dz_t)
             ei_fin  = ei_fin + fC(j_out)*(fR(j_out) + bij*fA(j_out))
         END DO
     END DO
-
+    !$OMP END DO
     energy_tmp = ei_in - ei_fin
-
+    !$OMP END PARALLEL
 END SUBROUTINE calcener_MC

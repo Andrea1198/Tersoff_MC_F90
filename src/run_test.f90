@@ -11,6 +11,7 @@ PROGRAM run_test
     mx = 5                      ! Number of cells in x direction
     my = 3                      ! Number of cells in y direction
     mz = 5                      ! Number of cells in z direction
+    
     ! ### Initialization of parameters ### !
     CALL read_steps()           ! Read number of steps from ./files/input/steps.txt
     CALL read_coeffs()          ! Read coefficients of Tersoff potential
